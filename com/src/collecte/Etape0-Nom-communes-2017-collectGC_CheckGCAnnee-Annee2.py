@@ -302,143 +302,146 @@ def bclcomm(page):
     idxcomm = 0
 
 
-# Référencement du répertoire de travail
-# Année de recherche des données
-Annee = '2014'
+if __name__ == '__main__':
 
-DirOutput = '/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Data_Argus_' + str(
-    Annee) + '/ScraperResults-Round0'
 
-if not os.path.exists(DirOutput):
-    os.makedirs(DirOutput)
+    # Référencement du répertoire de travail
+    # Année de recherche des données
+    Annee = '2014'
 
-os.chdir(DirOutput)
+    DirOutput = '/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Data_Argus_' + str(
+        Annee) + '/ScraperResults-Round0'
 
-print("repertoire 1", os.getcwd())
+    if not os.path.exists(DirOutput):
+        os.makedirs(DirOutput)
 
-# Création des dossier 'Communes' et 'Groupements' s'ils n'existent pas
-for dossier in ('Communes', 'Groupements'):
-    if not os.path.isdir(dossier):
-        os.makedirs(dossier)
+    os.chdir(DirOutput)
 
-# -------- Initialisation des variables -------
-# Lien vers le site
-# url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/' + \
-#    'accueil/flux.ex?_flowId=accueilcclloc-flow'
-url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/accueil/flux.ex?_flowId=accueilcclloc-flow'
-# Paths les plus utilisés dans la recherche de liens
-dbox = '//*[@id="donneesbox"]/table'
-fichedet = '//*[@id="pavegestionguichets"]/table[2]/tbody/tr/td[5]/a'
-# Variables de boucles utiles au premier lancement...
-# ... sinon elle sont alimentées par le fichier de log
-bcld, bcla, bclt, bclc, idxcomm = (1, 0, 2, 0, 0)
-alpha = ''
-listecc, refcc = ([], [])
-reprise = False
+    print("repertoire 1", os.getcwd())
 
-# Gestion du fichier log
-# S'il existe
-print("repertoire 2", os.getcwd())
-if os.path.isfile('log.csv'):
-    # print('Le fichier log.csv existe')
-    # L'ouvrir en lecture
-    log = io.open('log.csv', 'r')
-    # print(log)
-    # print("fichier de logs ouvert")
-    nbline = 0
-    oldd = 1
-    # Lire jusqu'a la derniére ligne afin de trouver où reprendre la boucle
-    for line in log:
-        print(line)
-        cols = line.split(';')
-        print(cols)
-        # Ne pas lire la première ligne (en-tête)
-        if nbline != 0:
-            # Récupérer les variables de boucles à partir de la colonne 'Boucle'
-            bcld, bcla, bclt, bclc, idxcomm = [int(i) for i in cols[8].replace('\n', "").split('-')]
-            # Si changement de département...
-            if bcld != oldd:
-                # ...vider la liste des cc
-                listecc, refcc = ([], [])
-                oldd = bcld
-            # Si la cc n'est pas dans la liste...
-            if cols[4] not in listecc:
-                # ... l'ajouter
-                listecc.append(cols[4])
-                refcc.append(cols[3])
-        nbline += 1
-    log.close()
-    reprise = True
-else:
-    # S'il n'existe pas le créer et écrire l'en-tête
-    log = io.open('log.csv', 'w')
-    log.write(u'IdCommunes;Nom_C;Dispo;IDGroupement;Nom_GC;Dispo;Boucle;Nbre_GC;Indice_GC\n')
-    log.close()
+    # Création des dossier 'Communes' et 'Groupements' s'ils n'existent pas
+    for dossier in ('Communes', 'Groupements'):
+        if not os.path.isdir(dossier):
+            os.makedirs(dossier)
 
-# Réouvrir le fichier de log afin de l'alimenter avec les nouvelles entrées
-log = io.open('log.csv', 'a')
-try:
-    Nreprise = nbline
-except:
-    Nreprise = 0
+    # -------- Initialisation des variables -------
+    # Lien vers le site
+    # url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/' + \
+    #    'accueil/flux.ex?_flowId=accueilcclloc-flow'
+    url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/accueil/flux.ex?_flowId=accueilcclloc-flow'
+    # Paths les plus utilisés dans la recherche de liens
+    dbox = '//*[@id="donneesbox"]/table'
+    fichedet = '//*[@id="pavegestionguichets"]/table[2]/tbody/tr/td[5]/a'
+    # Variables de boucles utiles au premier lancement...
+    # ... sinon elle sont alimentées par le fichier de log
+    bcld, bcla, bclt, bclc, idxcomm = (1, 0, 2, 0, 0)
+    alpha = ''
+    listecc, refcc = ([], [])
+    reprise = False
 
-# Ouverture du fichier csv d'écriture des liens communes - groupement de communes
-# FichierDest1=open("Lien-C-GC"+str(Annee)+"-"+str(date.today())+".csv", "w")
-FichierDest1 = open("Lien-C-GC" + str(Annee) + "-" + str(Nreprise) + ".csv", "w")
-LinkC_GC = csv.writer(FichierDest1)
+    # Gestion du fichier log
+    # S'il existe
+    print("repertoire 2", os.getcwd())
+    if os.path.isfile('log.csv'):
+        # print('Le fichier log.csv existe')
+        # L'ouvrir en lecture
+        log = io.open('log.csv', 'r')
+        # print(log)
+        # print("fichier de logs ouvert")
+        nbline = 0
+        oldd = 1
+        # Lire jusqu'a la derniére ligne afin de trouver où reprendre la boucle
+        for line in log:
+            print(line)
+            cols = line.split(';')
+            print(cols)
+            # Ne pas lire la première ligne (en-tête)
+            if nbline != 0:
+                # Récupérer les variables de boucles à partir de la colonne 'Boucle'
+                bcld, bcla, bclt, bclc, idxcomm = [int(i) for i in cols[8].replace('\n', "").split('-')]
+                # Si changement de département...
+                if bcld != oldd:
+                    # ...vider la liste des cc
+                    listecc, refcc = ([], [])
+                    oldd = bcld
+                # Si la cc n'est pas dans la liste...
+                if cols[4] not in listecc:
+                    # ... l'ajouter
+                    listecc.append(cols[4])
+                    refcc.append(cols[3])
+            nbline += 1
+        log.close()
+        reprise = True
+    else:
+        # S'il n'existe pas le créer et écrire l'en-tête
+        log = io.open('log.csv', 'w')
+        log.write(u'IdCommunes;Nom_C;Dispo;IDGroupement;Nom_GC;Dispo;Boucle;Nbre_GC;Indice_GC\n')
+        log.close()
 
-Titre = ["Id C", "Id GC", "Nom C", "Nom GC", "Nbre GC", "Indice GC " + str(Annee)]
-writeCom(LinkC_GC, Titre)
-
-# Ouverture des fichiers csv d'écriture des enregistrements scrapés et des urls incorrects
-# FichierDest1=open("Scraper-Data finance communes-"+str(Annee)+"-"+str(date.today())+".csv", "wb")
-FichierDest1 = open("Scraper-Data finance communes-" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
-FileVigie = csv.writer(FichierDest1)
-
-# FichierDest2=open("ScraperCom"+str(Annee)+"-communes_incorrectes"+str(date.today())+".csv", "wb")
-FichierDest2 = open("ScraperCom-communes incorrectes" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
-Fileurldef = csv.writer(FichierDest2)
-
-# Ecriture de la ligne de titre du fichier résultats
-# Titre=['indice','url','CodeGeo','Nom Commune INSEE','Nom Com portail','Num Com','NumDep','NomDep','NumReg','NumReg16','PopCom','TailleCom','Num EPCI','Nature EPCI','Groupe Communes']
-# Titre=Titre+['RevFoncref_C','ImpLocref_C','AutImpref_C','DGFref_C','DepFoncref_C','DepPersoref_C','Achatref_C','ChFinref_C','Contref_C','DepSubref_C','RevInvref_C','Empruntref_C','Subrref_C','FCTVAref_C','Contref_C','Empruntref_C','DepInvref_C','DepEquipref_C','RembEmpruntref_C','ChRepref_C','Immoref_C','EncoursDetteref_C','AnDetteref_C','BaseTHref_C','BaseTFPBref_C','BaseTFPNBref_C','BaseTAPNBref_C','BaseTCEntref_C','MontTHref_C','MontTFPBref_C','MontTFPNBref_C','MontTAPNBref_C','MontTCEntref_C','MontCVAEref_C','MontEntResref_C','MontSurComref_C']
-# Titre=Titre+['RevFoncref_GC','ImpLocref_GC','AutImpref_GC','DGFref_GC','DepFoncref_GC','DepPersoref_GC','Achatref_GC','ChFinref_GC','Contref_GC','DepSubref_GC','RevInvref_GC','Empruntref_GC','Subrref_GC','FCTVAref_GC','Contref_GC','Empruntref_GC','DepInvref_GC','DepEquipref_GC','RembEmpruntref_GC','ChRepref_GC','Immoref_GC','EncoursDetteref_GC','AnDetteref_GC','BaseTHref_GC','BaseTFPBref_GC','BaseTFPNBref_GC','BaseTAPNBref_GC','BaseTCEntref_GC','MontTHref_GC','MontTFPBref_GC','MontTFPNBref_GC','MontTAPNBref_GC','MontTCEntref_GC','MontCVAEref_GC','MontEntResref_GC','MontSurComref_GC']
-# writeCom(FileVigie, Titre)
-
-# Lancer Chrome et ouvrir le site
-page = opengouv(url)
-
-# Boucle départements
-for d in range(bcld, len(getdep(page).options)):
-    # Selection et page du département
+    # Réouvrir le fichier de log afin de l'alimenter avec les nouvelles entrées
+    log = io.open('log.csv', 'a')
     try:
-        getdep(page).select_by_index(d)
+        Nreprise = nbline
     except:
-        print(page, d)
-    print("d=", d)
-    print("page")
-    print(page)
-    # Click sur OK
-    page.find_element_by_name('_eventId_validercommunesetgroupts').click()
-    # Log du département
-    nodep = page.find_element_by_xpath(dbox + '[1]/tbody/tr[1]/td[1]/p').text
-    nodep = nodep.split(' ')[0]
-    # Remise à zéro de la liste des cc
-    listecc = []
-    refcc = []
-    # Boucle alphabétique
-    for a in range(bcla, len(getalpha(page))):
+        Nreprise = 0
+
+    # Ouverture du fichier csv d'écriture des liens communes - groupement de communes
+    # FichierDest1=open("Lien-C-GC"+str(Annee)+"-"+str(date.today())+".csv", "w")
+    FichierDest1 = open("Lien-C-GC" + str(Annee) + "-" + str(Nreprise) + ".csv", "w")
+    LinkC_GC = csv.writer(FichierDest1)
+
+    Titre = ["Id C", "Id GC", "Nom C", "Nom GC", "Nbre GC", "Indice GC " + str(Annee)]
+    writeCom(LinkC_GC, Titre)
+
+    # Ouverture des fichiers csv d'écriture des enregistrements scrapés et des urls incorrects
+    # FichierDest1=open("Scraper-Data finance communes-"+str(Annee)+"-"+str(date.today())+".csv", "wb")
+    FichierDest1 = open("Scraper-Data finance communes-" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
+    FileVigie = csv.writer(FichierDest1)
+
+    # FichierDest2=open("ScraperCom"+str(Annee)+"-communes_incorrectes"+str(date.today())+".csv", "wb")
+    FichierDest2 = open("ScraperCom-communes incorrectes" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
+    Fileurldef = csv.writer(FichierDest2)
+
+    # Ecriture de la ligne de titre du fichier résultats
+    # Titre=['indice','url','CodeGeo','Nom Commune INSEE','Nom Com portail','Num Com','NumDep','NomDep','NumReg','NumReg16','PopCom','TailleCom','Num EPCI','Nature EPCI','Groupe Communes']
+    # Titre=Titre+['RevFoncref_C','ImpLocref_C','AutImpref_C','DGFref_C','DepFoncref_C','DepPersoref_C','Achatref_C','ChFinref_C','Contref_C','DepSubref_C','RevInvref_C','Empruntref_C','Subrref_C','FCTVAref_C','Contref_C','Empruntref_C','DepInvref_C','DepEquipref_C','RembEmpruntref_C','ChRepref_C','Immoref_C','EncoursDetteref_C','AnDetteref_C','BaseTHref_C','BaseTFPBref_C','BaseTFPNBref_C','BaseTAPNBref_C','BaseTCEntref_C','MontTHref_C','MontTFPBref_C','MontTFPNBref_C','MontTAPNBref_C','MontTCEntref_C','MontCVAEref_C','MontEntResref_C','MontSurComref_C']
+    # Titre=Titre+['RevFoncref_GC','ImpLocref_GC','AutImpref_GC','DGFref_GC','DepFoncref_GC','DepPersoref_GC','Achatref_GC','ChFinref_GC','Contref_GC','DepSubref_GC','RevInvref_GC','Empruntref_GC','Subrref_GC','FCTVAref_GC','Contref_GC','Empruntref_GC','DepInvref_GC','DepEquipref_GC','RembEmpruntref_GC','ChRepref_GC','Immoref_GC','EncoursDetteref_GC','AnDetteref_GC','BaseTHref_GC','BaseTFPBref_GC','BaseTFPNBref_GC','BaseTAPNBref_GC','BaseTCEntref_GC','MontTHref_GC','MontTFPBref_GC','MontTFPNBref_GC','MontTAPNBref_GC','MontTCEntref_GC','MontCVAEref_GC','MontEntResref_GC','MontSurComref_GC']
+    # writeCom(FileVigie, Titre)
+
+    # Lancer Chrome et ouvrir le site
+    page = opengouv(url)
+
+    # Boucle départements
+    for d in range(bcld, len(getdep(page).options)):
+        # Selection et page du département
         try:
-            lkalpha = getalpha(page)[a]
-            alpha = lkalpha.text
-            lkalpha.click()
+            getdep(page).select_by_index(d)
         except:
-            print("erreur", bcla, len(getalpha(page)))
+            print(page, d)
+        print("d=", d)
+        print("page")
+        print(page)
+        # Click sur OK
+        page.find_element_by_name('_eventId_validercommunesetgroupts').click()
+        # Log du département
+        nodep = page.find_element_by_xpath(dbox + '[1]/tbody/tr[1]/td[1]/p').text
+        nodep = nodep.split(' ')[0]
+        # Remise à zéro de la liste des cc
+        listecc = []
+        refcc = []
+        # Boucle alphabétique
+        for a in range(bcla, len(getalpha(page))):
+            try:
+                lkalpha = getalpha(page)[a]
+                alpha = lkalpha.text
+                lkalpha.click()
+            except:
+                print("erreur", bcla, len(getalpha(page)))
 
-        # Boucle des communes
-        bclcomm(page)
-    bcla = 0
-    # retour aux départements
-    page.find_element_by_xpath('//*[@id="formulaire"]/div[2]/a[1]').click()
+            # Boucle des communes
+            bclcomm(page)
+        bcla = 0
+        # retour aux départements
+        page.find_element_by_xpath('//*[@id="formulaire"]/div[2]/a[1]').click()
 
-log.close()
+    log.close()
