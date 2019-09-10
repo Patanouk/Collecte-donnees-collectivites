@@ -1,49 +1,48 @@
 # -*- coding: utf-8 -*-
-from selenium import webdriver
-import selenium.webdriver.support.ui as UI
-import time
-import os
-import io
-
 import csv
+import io
+import os
+
+import selenium.webdriver.support.ui as UI
 from bs4 import BeautifulSoup
-import sys
-from datetime import date
+from selenium import webdriver
 
-#Commentaires
 
-    # Dossier/ données clés
-        # Chromedriver : ligne 88
-        # Année : ligne 309
-        # Fichiers résultats ligne 311
+# Commentaires
 
-    # lignes 235-236 écriture du fichier commune
-    # lignes 273-274 écriture dy fichier grouepement
-    # ligne 169 emplacement de Chromedriver
-    # Ligne 54 emplacement de stockage des fichiers résultats
+# Dossier/ données clés
+# Chromedriver : ligne 88
+# Année : ligne 309
+# Fichiers résultats ligne 311
+
+# lignes 235-236 écriture du fichier commune
+# lignes 273-274 écriture dy fichier grouepement
+# ligne 169 emplacement de Chromedriver
+# Ligne 54 emplacement de stockage des fichiers résultats
 #  -------- Fonctions auxiliaires et d'analyse des données des pages extraites -------
 
 
 # Normalisation d'un nombre entier en chaîne de 3 caractères
 def Norm3(var):
-    if var<=9:
-        Res='00'+str(var)
-    elif var<=99:
-        Res='0'+str(var)
+    if var <= 9:
+        Res = '00' + str(var)
+    elif var <= 99:
+        Res = '0' + str(var)
     else:
-        Res=str(min(var,999))
+        Res = str(min(var, 999))
     return Res
+
 
 # fonction de nettoyage des chaines scrapées par élimination de &nbsp
 def clean1(str):
-    cleanstr=str[:str.find('&nbsp')]
+    cleanstr = str[:str.find('&nbsp')]
     return cleanstr
 
 
 def cherche(a, b):
     s = 0
     for x in range(len(b)):
-        if (s == 0 and b[x] == a):
+        if s == 0 and b[x] == a:
             s = x
     if s == 0:
         s = len(b) + 1
@@ -55,41 +54,38 @@ def writeCom(writer, line):
     writer.writerow(line)
 
 
-
 # Fonction de collecte des données dans la page de la commune
 def Get_dataC(page_source):
-    #print page_source
-    #content_file = open(page_source, 'r')
-    #dom = BeautifulSoup(commune, "lxml")
+    # print page_source
+    # content_file = open(page_source, 'r')
+    # dom = BeautifulSoup(commune, "lxml")
     dom = BeautifulSoup(page_source)
     NomCom = dom.find('span', attrs={"id": "gfp"}).contents[0].strip(u'\xe0')
-    if str(NomCom).find(" (commune nouvelle")>0:
-        NomCom=str(NomCom)[0:str(NomCom).find(" (commune nouvelle")]
-    #print(NomCom)
+    if str(NomCom).find(" (commune nouvelle") > 0:
+        NomCom = str(NomCom)[0:str(NomCom).find(" (commune nouvelle")]
+    # print(NomCom)
     NomDep = dom.find('span', attrs={"id": "departement"}).contents[0].strip(u'\xe0').replace("-", "")
-    #print(NomDep)
+    # print(NomDep)
     PopCom = dom.find('td', attrs={"id": "population"}).contents[0].strip(u'\xe0').replace(
-        "Population ","").replace(" en vigueur au 1er janvier de l'exercice : ", "").replace(
+        "Population ", "").replace(" en vigueur au 1er janvier de l'exercice : ", "").replace(
         " habitants - Budget principal seul", "")
-    #print(PopCom)
-    Res=NomCom+","+NomDep+","+PopCom
-    return (Res)
+    # print(PopCom)
+    Res = NomCom + "," + NomDep + "," + PopCom
+    return Res
 
 
-#def Get_dataCC(page.page_source)
-
-
+# def Get_dataCC(page.page_source)
 
 
 def opengouv(url):
-    print("url=",url)
+    print("url=", url)
     chrome_options = webdriver.chrome.options.Options()
     # Private browsing
     chrome_options.add_argument("--incognito")
-    path_to_chromedriver = "/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Argus_2017/Codes/chromedriver" # change path as needed
-    browser = webdriver.Chrome(executable_path = path_to_chromedriver, chrome_options = webdriver.chrome.options.Options())
-    #browser = webdriver.Chrome(executable_path = path_to_chromedriver)
-    #browser = webdriver.Firefox()
+    path_to_chromedriver = "/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Argus_2017/Codes/chromedriver"  # change path as needed
+    browser = webdriver.Chrome(executable_path=path_to_chromedriver, chrome_options=webdriver.chrome.options.Options())
+    # browser = webdriver.Chrome(executable_path = path_to_chromedriver)
+    # browser = webdriver.Firefox()
     browser.implicitly_wait(20)  # seconds
     browser.get(url)
     return browser
@@ -108,20 +104,20 @@ def getalpha(page):
 def indentcc(page):
     # Identification du groupement de commune
     nomcc = page.find_element_by_xpath('// *[@id="gfp"]').text
-    nomccs=str(nomcc).replace("/","_")
-    print("nomccs",nomccs,"nomcc",nomcc)
+    nomccs = str(nomcc).replace("/", "_")
+    print("nomccs", nomccs, "nomcc", nomcc)
     # Si la cc à déjà été vue
     if nomcc in listecc:
         # Renvoie la référence
         idx = listecc.index(nomcc)
-        return (nomccs, refcc[idx])
+        return nomccs, refcc[idx]
     else:
         # Ajoute la cc dans la liste 'déjà vue'
         # et envoie la référence
         idxcc = len(listecc)
         listecc.append(nomccs)
-        refcc.append('*'.join((nomccs,nodep, str(idxcc).zfill(3))))
-        return (nomccs, refcc[-1])
+        refcc.append('*'.join((nomccs, nodep, str(idxcc).zfill(3))))
+        return nomccs, refcc[-1]
 
 
 def bclcomm(page):
@@ -133,10 +129,10 @@ def bclcomm(page):
         table = page.find_elements_by_xpath(dbox)[t - 1]
         nbcomm = len(table.find_elements_by_class_name('libellepetit'))
 
-        #print()
-        #print("C : t,nbcomm,table")
-        #print(t,nbcomm)
-        #print(table.find_elements_by_class_name('libellepetit'))
+        # print()
+        # print("C : t,nbcomm,table")
+        # print(t,nbcomm)
+        # print(table.find_elements_by_class_name('libellepetit'))
 
         # Boucle des communes de la table
         for c in range(bclc, nbcomm):
@@ -144,42 +140,42 @@ def bclcomm(page):
             pth = dbox + '[' + str(t) + ']/tbody/tr/td/a'
             lkcomm = page.find_elements_by_xpath(pth)[c * 2 + 1]
 
-            #print()
-            #print("C : c,lkcomm.text")
-            #print(c)
-            print("page de la commune :",lkcomm.text)
+            # print()
+            # print("C : c,lkcomm.text")
+            # print(c)
+            print("page de la commune :", lkcomm.text)
 
             # Identification de la commune
             nmcomm = lkcomm.text
-            nmcomms=str(nmcomm).replace("/","_")
-            idcomm = '*'.join((nmcomms,nodep, alpha, str(idxcomm).zfill(3)))
+            nmcomms = str(nmcomm).replace("/", "_")
+            idcomm = '*'.join((nmcomms, nodep, alpha, str(idxcomm).zfill(3)))
             # Page de la commune
             lkcomm.click()
             # Budget principal
             page.find_element_by_xpath('//*[@id="bpcommune"]/a[2]').click()
             # recherche des liens par année
             # Vérification de la disponibilité des données
-            infos_link=page.find_element_by_xpath('//*[@id="donnees"]')
+            infos_link = page.find_element_by_xpath('//*[@id="donnees"]')
             infos = page.find_element_by_xpath('//*[@id="donnees"]').text
 
-            #print()
+            # print()
             print("infos")
             print(infos_link)
 
             # Si la page contient 'non disponibles' ou n'affiche pas les données de l'année
             if (infos.find(Annee) == -1) or (infos.find(u'non disponibles') > -1):
-                    # Renseigner la variable de disponibilité
+                # Renseigner la variable de disponibilité
                 dispocomm = 'N/D'
             else:
                 # Sinon, se positionner à l'année souhaitée et ouvrir la page 'Fiche détaillée'
                 print("exploration par annee")
                 elems = page.find_elements_by_xpath("//a[@href]")
                 for elem in elems:
-                    print("elem:",elem.get_attribute("href"))
+                    print("elem:", elem.get_attribute("href"))
                     if (elem.text.find(Annee) >= 0):
                         elem.click()
-                        #print("elem.text",elem.text)
-#                submitfromonglet_parameter('_eventId_changerexercice', 'exerciceSelectionne', str(Annee))
+                        # print("elem.text",elem.text)
+                #                submitfromonglet_parameter('_eventId_changerexercice', 'exerciceSelectionne', str(Annee))
                 print(page.text)
                 elem.find_element_by_xpath(fichedet).click()
                 # Enregistrer son contenu dans un fichier nommé
@@ -187,76 +183,69 @@ def bclcomm(page):
                 with io.open('Communes/' + idcomm + '.html', 'w') as f:
                     f.write(page.page_source)
 
-                #print()
-                #print("OK1")
+                # print()
+                # print("OK1")
 
                 #################################################
                 # Ici votre code de traitement par commune avec #
                 # les données de page.page_source               #
-                
+
                 #
-                ResCommune=Get_dataC(page.page_source)
+                ResCommune = Get_dataC(page.page_source)
                 #################################################
                 dispocomm = 'OK'
 
+                # print()
+                # print("OK2")
 
-                #print()
-                #print("OK2")
-
-#Retour à "Choix d'une commune"
+            # Retour à "Choix d'une commune"
             page.find_element_by_xpath('//*[@class="chemincontainer"]/a[3]').click()
 
             print()
-            #ElementGC=page.find_element_by_id('donneesbox')
-            #print("TexteGC",type(ElementGC),ElementGC)
-            #print(ElemntGC.text)
-            #ListeGC=TexteGC.find_elements_by_id('donneesbox')
+            # ElementGC=page.find_element_by_id('donneesbox')
+            # print("TexteGC",type(ElementGC),ElementGC)
+            # print(ElemntGC.text)
+            # ListeGC=TexteGC.find_elements_by_id('donneesbox')
 
             pthTot = dbox + '/tbody/tr/td/div'
             ListeGC = page.find_elements_by_xpath(pthTot)
             ta = 0
             try:
-                Long=len(ListeGC)
+                Long = len(ListeGC)
             except:
-                Long =0
-            print("nombre d'elements GC :", len(ListeGC)-1)
+                Long = 0
+            print("nombre d'elements GC :", len(ListeGC) - 1)
 
-            if Long<=1:
-                tu0="na"
-                GC="na"
+            if Long <= 1:
+                tu0 = "na"
                 pass
-            if Long==2:
-                ta=1
-                tu0=1
-                GC = ListeGC[1].text
+            if Long == 2:
+                tu0 = 1
             else:
                 for tu in range(len(ListeGC)):
-                    if ListeGC[tu].text.find(Annee)>-1 and ta==0:
-                        ta=1
-                        tu0=tu
-                        GC=ListeGC[tu].text
+                    if ListeGC[tu].text.find(Annee) > -1 and ta == 0:
+                        ta = 1
+                        tu0 = tu
                     else:
-                        tu0="na"
-                        GC="na"
-            #print(tu0, GC,ta)
+                        tu0 = "na"
 
-# Traitement budget groupement
+            # Traitement budget groupement
             idcc, nmcc, dispocc = ('N/D', 'N/D', 'N/D')
             # Si le lien vers le groupement existe...
-            if tu0=="na":
+            if tu0 == "na":
                 pth = dbox + '/tbody/tr[3]/td/div/a[2]'
             else:
-                pth = dbox + '/tbody/tr[3]/td/div/a['+str(int(tu0+1))+']'
+                pth = dbox + '/tbody/tr[3]/td/div/a[' + str(int(tu0 + 1)) + ']'
 
             if page.find_elements_by_xpath(pth):
                 # ... le suivre
                 page.find_element_by_xpath(pth).click()
-                #print("page.find GC",page.find_element_by_xpath(pth).text)
+                # print("page.find GC",page.find_element_by_xpath(pth).text)
                 # Lecture de la page
                 infos = page.find_element_by_xpath('//*[@id="donnees"]').text
 
-                #print()
-                #print("infos GC OK")
+                # print()
+                # print("infos GC OK")
 
                 # Si la page contient 'non disponibles' ou n'affiche
                 #   pas les données de l'année
@@ -281,13 +270,13 @@ def bclcomm(page):
                     #################################################
                     dispocc = 'OK'
 
-            Lien=[idcomm,idcc]
-            Lien2=[idcomm,idcc,nmcomm,nmcc,Long-1,tu0]
+            Lien = [idcomm, idcc]
+            Lien2 = [idcomm, idcc, nmcomm, nmcc, Long - 1, tu0]
             try:
-                print("ResCommune",ResCommune,Lien2)
+                print("ResCommune", ResCommune, Lien2)
             except:
-                print('pas de ResCommune',idcomm,idcc)
-            writeCom(LinkC_GC,Lien2)
+                print('pas de ResCommune', idcomm, idcc)
+            writeCom(LinkC_GC, Lien2)
 
             # Retour à "Choix d'une commune"
             pth = '//*[@class="chemincontainer"]/a[2]'
@@ -298,28 +287,28 @@ def bclcomm(page):
             cursor = '-'.join((str(d), str(a), str(t), str(c), str(idxcomm)))
             # Création de la ligne à écrire dans le fichier log.csv
             logcomm = ';'.join((idcomm, nmcomm, dispocomm,
-                                idcc, nmcc, dispocc, str(Long-1),str(tu0),cursor))
+                                idcc, nmcc, dispocc, str(Long - 1), str(tu0), cursor))
 
             # Ne pas écrire la ligne en cas de reprise (elle existe déjà)
             if reprise:
                 reprise = False
             else:
-                print("ligne de log",logcomm)
+                print("ligne de log", logcomm)
                 log.write(logcomm + '\n')
             # Incrémentation de l'index des communes
             idxcomm += 1
-    # Remise à défaut des variables de boucle
+        # Remise à défaut des variables de boucle
         bclc = 0
     bclt = 2
     idxcomm = 0
-
 
 
 # Référencement du répertoire de travail
 # Année de recherche des données
 Annee = '2014'
 
-DirOutput = '/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Data_Argus_'+str(Annee)+'/ScraperResults-Round0'
+DirOutput = '/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Data_Argus_' + str(
+    Annee) + '/ScraperResults-Round0'
 
 if not os.path.exists(DirOutput):
     os.makedirs(DirOutput)
@@ -335,7 +324,7 @@ for dossier in ('Communes', 'Groupements'):
 
 # -------- Initialisation des variables -------
 # Lien vers le site
-#url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/' + \
+# url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/' + \
 #    'accueil/flux.ex?_flowId=accueilcclloc-flow'
 url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/accueil/flux.ex?_flowId=accueilcclloc-flow'
 # Paths les plus utilisés dans la recherche de liens
@@ -348,16 +337,15 @@ alpha = ''
 listecc, refcc = ([], [])
 reprise = False
 
-
 # Gestion du fichier log
 # S'il existe
-print("repertoire 2",os.getcwd())
+print("repertoire 2", os.getcwd())
 if os.path.isfile('log.csv'):
-    #print('Le fichier log.csv existe')
+    # print('Le fichier log.csv existe')
     # L'ouvrir en lecture
     log = io.open('log.csv', 'r')
-    #print(log)
-    #print("fichier de logs ouvert")
+    # print(log)
+    # print("fichier de logs ouvert")
     nbline = 0
     oldd = 1
     # Lire jusqu'a la derniére ligne afin de trouver où reprendre la boucle
@@ -368,7 +356,7 @@ if os.path.isfile('log.csv'):
         # Ne pas lire la première ligne (en-tête)
         if nbline != 0:
             # Récupérer les variables de boucles à partir de la colonne 'Boucle'
-            bcld, bcla, bclt, bclc, idxcomm = [int(i) for i in cols[8].replace('\n',"").split('-')]
+            bcld, bcla, bclt, bclc, idxcomm = [int(i) for i in cols[8].replace('\n', "").split('-')]
             # Si changement de département...
             if bcld != oldd:
                 # ...vider la liste des cc
@@ -391,34 +379,32 @@ else:
 # Réouvrir le fichier de log afin de l'alimenter avec les nouvelles entrées
 log = io.open('log.csv', 'a')
 try:
-    Nreprise=nbline
+    Nreprise = nbline
 except:
-    Nreprise=0
-
-
+    Nreprise = 0
 
 # Ouverture du fichier csv d'écriture des liens communes - groupement de communes
 # FichierDest1=open("Lien-C-GC"+str(Annee)+"-"+str(date.today())+".csv", "w")
-FichierDest1=open("Lien-C-GC"+str(Annee)+"-"+str(Nreprise)+".csv", "w")
-LinkC_GC=csv.writer(FichierDest1)
+FichierDest1 = open("Lien-C-GC" + str(Annee) + "-" + str(Nreprise) + ".csv", "w")
+LinkC_GC = csv.writer(FichierDest1)
 
-Titre=["Id C","Id GC","Nom C","Nom GC","Nbre GC","Indice GC "+str(Annee)]
-writeCom(LinkC_GC,Titre)
+Titre = ["Id C", "Id GC", "Nom C", "Nom GC", "Nbre GC", "Indice GC " + str(Annee)]
+writeCom(LinkC_GC, Titre)
 
 # Ouverture des fichiers csv d'écriture des enregistrements scrapés et des urls incorrects
-#FichierDest1=open("Scraper-Data finance communes-"+str(Annee)+"-"+str(date.today())+".csv", "wb")
-FichierDest1=open("Scraper-Data finance communes-"+str(Annee)+"-"+str(Nreprise)+".csv", "wb")
-FileVigie=csv.writer(FichierDest1)
+# FichierDest1=open("Scraper-Data finance communes-"+str(Annee)+"-"+str(date.today())+".csv", "wb")
+FichierDest1 = open("Scraper-Data finance communes-" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
+FileVigie = csv.writer(FichierDest1)
 
-#FichierDest2=open("ScraperCom"+str(Annee)+"-communes_incorrectes"+str(date.today())+".csv", "wb")
-FichierDest2=open("ScraperCom-communes incorrectes"+str(Annee)+"-"+str(Nreprise)+".csv", "wb")
-Fileurldef=csv.writer(FichierDest2)
+# FichierDest2=open("ScraperCom"+str(Annee)+"-communes_incorrectes"+str(date.today())+".csv", "wb")
+FichierDest2 = open("ScraperCom-communes incorrectes" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
+Fileurldef = csv.writer(FichierDest2)
 
 # Ecriture de la ligne de titre du fichier résultats
-#Titre=['indice','url','CodeGeo','Nom Commune INSEE','Nom Com portail','Num Com','NumDep','NomDep','NumReg','NumReg16','PopCom','TailleCom','Num EPCI','Nature EPCI','Groupe Communes']
-#Titre=Titre+['RevFoncref_C','ImpLocref_C','AutImpref_C','DGFref_C','DepFoncref_C','DepPersoref_C','Achatref_C','ChFinref_C','Contref_C','DepSubref_C','RevInvref_C','Empruntref_C','Subrref_C','FCTVAref_C','Contref_C','Empruntref_C','DepInvref_C','DepEquipref_C','RembEmpruntref_C','ChRepref_C','Immoref_C','EncoursDetteref_C','AnDetteref_C','BaseTHref_C','BaseTFPBref_C','BaseTFPNBref_C','BaseTAPNBref_C','BaseTCEntref_C','MontTHref_C','MontTFPBref_C','MontTFPNBref_C','MontTAPNBref_C','MontTCEntref_C','MontCVAEref_C','MontEntResref_C','MontSurComref_C']
-#Titre=Titre+['RevFoncref_GC','ImpLocref_GC','AutImpref_GC','DGFref_GC','DepFoncref_GC','DepPersoref_GC','Achatref_GC','ChFinref_GC','Contref_GC','DepSubref_GC','RevInvref_GC','Empruntref_GC','Subrref_GC','FCTVAref_GC','Contref_GC','Empruntref_GC','DepInvref_GC','DepEquipref_GC','RembEmpruntref_GC','ChRepref_GC','Immoref_GC','EncoursDetteref_GC','AnDetteref_GC','BaseTHref_GC','BaseTFPBref_GC','BaseTFPNBref_GC','BaseTAPNBref_GC','BaseTCEntref_GC','MontTHref_GC','MontTFPBref_GC','MontTFPNBref_GC','MontTAPNBref_GC','MontTCEntref_GC','MontCVAEref_GC','MontEntResref_GC','MontSurComref_GC']
-#writeCom(FileVigie, Titre)
+# Titre=['indice','url','CodeGeo','Nom Commune INSEE','Nom Com portail','Num Com','NumDep','NomDep','NumReg','NumReg16','PopCom','TailleCom','Num EPCI','Nature EPCI','Groupe Communes']
+# Titre=Titre+['RevFoncref_C','ImpLocref_C','AutImpref_C','DGFref_C','DepFoncref_C','DepPersoref_C','Achatref_C','ChFinref_C','Contref_C','DepSubref_C','RevInvref_C','Empruntref_C','Subrref_C','FCTVAref_C','Contref_C','Empruntref_C','DepInvref_C','DepEquipref_C','RembEmpruntref_C','ChRepref_C','Immoref_C','EncoursDetteref_C','AnDetteref_C','BaseTHref_C','BaseTFPBref_C','BaseTFPNBref_C','BaseTAPNBref_C','BaseTCEntref_C','MontTHref_C','MontTFPBref_C','MontTFPNBref_C','MontTAPNBref_C','MontTCEntref_C','MontCVAEref_C','MontEntResref_C','MontSurComref_C']
+# Titre=Titre+['RevFoncref_GC','ImpLocref_GC','AutImpref_GC','DGFref_GC','DepFoncref_GC','DepPersoref_GC','Achatref_GC','ChFinref_GC','Contref_GC','DepSubref_GC','RevInvref_GC','Empruntref_GC','Subrref_GC','FCTVAref_GC','Contref_GC','Empruntref_GC','DepInvref_GC','DepEquipref_GC','RembEmpruntref_GC','ChRepref_GC','Immoref_GC','EncoursDetteref_GC','AnDetteref_GC','BaseTHref_GC','BaseTFPBref_GC','BaseTFPNBref_GC','BaseTAPNBref_GC','BaseTCEntref_GC','MontTHref_GC','MontTFPBref_GC','MontTFPNBref_GC','MontTAPNBref_GC','MontTCEntref_GC','MontCVAEref_GC','MontEntResref_GC','MontSurComref_GC']
+# writeCom(FileVigie, Titre)
 
 # Lancer Chrome et ouvrir le site
 page = opengouv(url)
@@ -429,8 +415,8 @@ for d in range(bcld, len(getdep(page).options)):
     try:
         getdep(page).select_by_index(d)
     except:
-        print(page,d)
-    print("d=",d)
+        print(page, d)
+    print("d=", d)
     print("page")
     print(page)
     # Click sur OK
@@ -448,7 +434,7 @@ for d in range(bcld, len(getdep(page).options)):
             alpha = lkalpha.text
             lkalpha.click()
         except:
-            print("erreur",bcla,len(getalpha(page)))
+            print("erreur", bcla, len(getalpha(page)))
 
         # Boucle des communes
         bclcomm(page)
