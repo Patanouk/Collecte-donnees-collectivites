@@ -2,8 +2,10 @@
 import csv
 import io
 import os
+from sys import platform
 
 import selenium.webdriver.support.ui as UI
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
@@ -79,12 +81,10 @@ def Get_dataC(page_source):
 
 def opengouv(url):
     print("url=", url)
-    chrome_options = webdriver.chrome.options.Options()
-    # Private browsing
+    chrome_options = ChromeOptions()
     chrome_options.add_argument("--incognito")
-    browser = webdriver.Chrome(executable_path=path_to_chromedriver, chrome_options=webdriver.chrome.options.Options())
-    # browser = webdriver.Chrome(executable_path = path_to_chromedriver)
-    # browser = webdriver.Firefox()
+
+    browser = webdriver.Chrome(executable_path=path_to_chromedriver, chrome_options=chrome_options)
     browser.implicitly_wait(20)  # seconds
     browser.get(url)
     return browser
@@ -301,14 +301,24 @@ def bclcomm(page):
     idxcomm = 0
 
 
+def get_path_to_chrome_driver():
+    if platform == "linux" or platform == "linux2":
+        return os.path.join(root_directory, "chrome/driver/chromedriver_linux")
+    elif platform == "darwin":
+        return os.path.join(root_directory, "chrome/driver/chromedriver_mac")
+    else:
+        raise EnvironmentError("Only supporting Linux & Mac")
+
+
 if __name__ == '__main__':
 
     # Année de recherche des données
     Annee = '2014'
 
     # Référencement du répertoire de travail
-    output_directory = os.path.join(os.path.dirname(__file__), '../../../output/' + str(Annee) + '/ScraperResults-Round0')
-    path_to_chromedriver = "/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Argus_2017/Codes/chromedriver"
+    root_directory = os.path.join(os.path.dirname(__file__), '../../../')
+    output_directory = os.path.join(root_directory, 'output/' + str(Annee) + '/ScraperResults-Round0')
+    path_to_chromedriver = get_path_to_chrome_driver()
 
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
@@ -336,7 +346,6 @@ if __name__ == '__main__':
 
     # Gestion du fichier log
     # S'il existe
-    print("repertoire 2", os.getcwd())
     if os.path.isfile('log.csv'):
         # print('Le fichier log.csv existe')
         # L'ouvrir en lecture
