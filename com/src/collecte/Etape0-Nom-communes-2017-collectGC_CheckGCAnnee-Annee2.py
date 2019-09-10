@@ -82,7 +82,6 @@ def opengouv(url):
     chrome_options = webdriver.chrome.options.Options()
     # Private browsing
     chrome_options.add_argument("--incognito")
-    path_to_chromedriver = "/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Argus_2017/Codes/chromedriver"  # change path as needed
     browser = webdriver.Chrome(executable_path=path_to_chromedriver, chrome_options=webdriver.chrome.options.Options())
     # browser = webdriver.Chrome(executable_path = path_to_chromedriver)
     # browser = webdriver.Firefox()
@@ -177,7 +176,7 @@ def bclcomm(page):
                         # print("elem.text",elem.text)
                 #                submitfromonglet_parameter('_eventId_changerexercice', 'exerciceSelectionne', str(Annee))
                 print(page.text)
-                elem.find_element_by_xpath(fichedet).click()
+                elem.find_element_by_xpath(fiche_departement).click()
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
                 with io.open('Communes/' + idcomm + '.html', 'w') as f:
@@ -255,7 +254,7 @@ def bclcomm(page):
                     dispocc = 'N/D'
                 else:
                     # Sinon, ouvrir la page 'Fiche détaillée'
-                    page.find_element_by_xpath(fichedet).click()
+                    page.find_element_by_xpath(fiche_departement).click()
                     # Récupération des infos du groupement
                     nmcc, idcc = indentcc(page)
                     # Enregistrer son contenu dans un fichier nommé
@@ -304,19 +303,17 @@ def bclcomm(page):
 
 if __name__ == '__main__':
 
-
-    # Référencement du répertoire de travail
     # Année de recherche des données
     Annee = '2014'
 
-    dirname = os.path.dirname(__file__)
-    output_directory = os.path.join(dirname, '../../../output/' + str(Annee) + '/ScraperResults-Round0')
+    # Référencement du répertoire de travail
+    output_directory = os.path.join(os.path.dirname(__file__), '../../../output/' + str(Annee) + '/ScraperResults-Round0')
+    path_to_chromedriver = "/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Argus_2017/Codes/chromedriver"
 
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
     os.chdir(output_directory)
-
     print("Actual work directory : {work_directory}".format(work_directory=os.getcwd()))
 
     # Création des dossier 'Communes' et 'Groupements' s'ils n'existent pas
@@ -326,12 +323,10 @@ if __name__ == '__main__':
 
     # -------- Initialisation des variables -------
     # Lien vers le site
-    # url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/' + \
-    #    'accueil/flux.ex?_flowId=accueilcclloc-flow'
     url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/accueil/flux.ex?_flowId=accueilcclloc-flow'
     # Paths les plus utilisés dans la recherche de liens
     dbox = '//*[@id="donneesbox"]/table'
-    fichedet = '//*[@id="pavegestionguichets"]/table[2]/tbody/tr/td[5]/a'
+    fiche_departement = '//*[@id="pavegestionguichets"]/table[2]/tbody/tr/td[5]/a'
     # Variables de boucles utiles au premier lancement...
     # ... sinon elle sont alimentées par le fichier de log
     bcld, bcla, bclt, bclc, idxcomm = (1, 0, 2, 0, 0)
