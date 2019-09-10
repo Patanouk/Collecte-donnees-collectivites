@@ -205,25 +205,25 @@ def bclcomm(page):
             # ElementGC=page.find_element_by_id('donneesbox')
             # print("TexteGC",type(ElementGC),ElementGC)
             # print(ElemntGC.text)
-            # ListeGC=TexteGC.find_elements_by_id('donneesbox')
+            # liste_gc=TexteGC.find_elements_by_id('donneesbox')
 
-            pthTot = dbox + '/tbody/tr/td/div'
-            ListeGC = page.find_elements_by_xpath(pthTot)
+            pth_tot = dbox + '/tbody/tr/td/div'
+            liste_gc = page.find_elements_by_xpath(pth_tot)
             ta = 0
             try:
-                Long = len(ListeGC)
+                long = len(liste_gc)
             except:
-                Long = 0
-            print("nombre d'elements GC :", len(ListeGC) - 1)
+                long = 0
+            print("nombre d'elements GC :", len(liste_gc) - 1)
 
-            if Long <= 1:
+            if long <= 1:
                 tu0 = "na"
                 pass
-            if Long == 2:
+            if long == 2:
                 tu0 = 1
             else:
-                for tu in range(len(ListeGC)):
-                    if ListeGC[tu].text.find(Annee) > -1 and ta == 0:
+                for tu in range(len(liste_gc)):
+                    if liste_gc[tu].text.find(Annee) > -1 and ta == 0:
                         ta = 1
                         tu0 = tu
                     else:
@@ -270,13 +270,12 @@ def bclcomm(page):
                     #################################################
                     dispocc = 'OK'
 
-            Lien = [idcomm, idcc]
-            Lien2 = [idcomm, idcc, nmcomm, nmcc, Long - 1, tu0]
+            lien2 = [idcomm, idcc, nmcomm, nmcc, long - 1, tu0]
             try:
-                print("ResCommune", ResCommune, Lien2)
+                print("ResCommune", ResCommune, lien2)
             except:
                 print('pas de ResCommune', idcomm, idcc)
-            writeCom(LinkC_GC, Lien2)
+            writeCom(LinkC_GC, lien2)
 
             # Retour à "Choix d'une commune"
             pth = '//*[@class="chemincontainer"]/a[2]'
@@ -287,7 +286,7 @@ def bclcomm(page):
             cursor = '-'.join((str(d), str(a), str(t), str(c), str(idxcomm)))
             # Création de la ligne à écrire dans le fichier log.csv
             logcomm = ';'.join((idcomm, nmcomm, dispocomm,
-                                idcc, nmcc, dispocc, str(Long - 1), str(tu0), cursor))
+                                idcc, nmcc, dispocc, str(long - 1), str(tu0), cursor))
 
             # Ne pas écrire la ligne en cas de reprise (elle existe déjà)
             if reprise:
