@@ -309,15 +309,15 @@ if __name__ == '__main__':
     # Année de recherche des données
     Annee = '2014'
 
-    DirOutput = '/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/Communes/1-Script/Data_Argus_' + str(
-        Annee) + '/ScraperResults-Round0'
+    dirname = os.path.dirname(__file__)
+    output_directory = os.path.join(dirname, '../../../output/' + str(Annee) + '/ScraperResults-Round0')
 
-    if not os.path.exists(DirOutput):
-        os.makedirs(DirOutput)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
 
-    os.chdir(DirOutput)
+    os.chdir(output_directory)
 
-    print("repertoire 1", os.getcwd())
+    print("Actual work directory : {work_directory}".format(work_directory=os.getcwd()))
 
     # Création des dossier 'Communes' et 'Groupements' s'ils n'existent pas
     for dossier in ('Communes', 'Groupements'):
