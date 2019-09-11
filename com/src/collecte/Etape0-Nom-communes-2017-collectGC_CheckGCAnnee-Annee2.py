@@ -49,16 +49,6 @@ def clean1(str):
     return cleanstr
 
 
-def cherche(a, b):
-    s = 0
-    for x in range(len(b)):
-        if s == 0 and b[x] == a:
-            s = x
-    if s == 0:
-        s = len(b) + 1
-    return s
-
-
 def get_data_commune(page_source: webdriver) -> str:
     """
     Fonction de collecte des données dans la page de la commune
