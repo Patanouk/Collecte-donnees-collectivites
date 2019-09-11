@@ -24,8 +24,12 @@ from selenium import webdriver
 #  -------- Fonctions auxiliaires et d'analyse des données des pages extraites -------
 
 
-# Normalisation d'un nombre entier en chaîne de 3 caractères
 def Norm3(var):
+    """
+    Normalisation d'un nombre entier en chaîne de 3 caractères
+    :param var:
+    :return:
+    """
     if var <= 9:
         Res = '00' + str(var)
     elif var <= 99:
@@ -35,8 +39,12 @@ def Norm3(var):
     return Res
 
 
-# fonction de nettoyage des chaines scrapées par élimination de &nbsp
 def clean1(str):
+    """
+    fonction de nettoyage des chaines scrapées par élimination de &nbsp
+    :param str:
+    :return:
+    """
     cleanstr = str[:str.find('&nbsp')]
     return cleanstr
 
@@ -56,8 +64,12 @@ def writeCom(writer, line):
     writer.writerow(line)
 
 
-# Fonction de collecte des données dans la page de la commune
 def Get_dataC(page_source: webdriver) -> str:
+    """
+    Fonction de collecte des données dans la page de la commune
+    :param page_source:
+    :return:
+    """
     dom = BeautifulSoup(page_source)
     NomCom = dom.find('span', attrs={"id": "gfp"}).contents[0].strip(u'\xe0')
     if str(NomCom).find(" (commune nouvelle") > 0:
@@ -73,9 +85,6 @@ def Get_dataC(page_source: webdriver) -> str:
     return Res
 
 
-# def Get_dataCC(page.page_source)
-
-
 def opengouv(url: str) -> webdriver:
     print("url=", url)
     chrome_options = ChromeOptions()
@@ -88,12 +97,20 @@ def opengouv(url: str) -> webdriver:
 
 
 def getdep(page):
-    # Selection de la liste des départements
+    """
+    Selection de la liste des départements
+    :param page:
+    :return:
+    """
     return UI.Select(page.find_element_by_id('listeDepartements'))
 
 
 def getalpha(page):
-    # Selection de la liste alphabétique des communes
+    """
+    Selection de la liste alphabétique des communes
+    :param page:
+    :return:
+    """
     return page.find_elements_by_xpath(dbox + '/tbody/tr[1]/td[2]/p/a')
 
 
