@@ -96,7 +96,7 @@ def open_main_page(url: str) -> webdriver:
     return browser
 
 
-def getdep(page):
+def getdep(page: webdriver):
     """
     Selection de la liste des départements
     :param page:
@@ -105,7 +105,7 @@ def getdep(page):
     return UI.Select(page.find_element_by_id('listeDepartements'))
 
 
-def getalpha(page):
+def getalpha(page: webdriver):
     """
     Selection de la liste alphabétique des communes
     :param page:
