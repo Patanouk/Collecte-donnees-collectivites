@@ -59,11 +59,6 @@ def cherche(a, b):
     return s
 
 
-# Fonction d'écriture d'un enregistrement dans un fichier (par exemple celui des résultats scrapés)
-def writeCom(writer, line):
-    writer.writerow(line)
-
-
 def Get_dataC(page_source: webdriver) -> str:
     """
     Fonction de collecte des données dans la page de la commune
@@ -260,7 +255,7 @@ def boucle_commune(page):
                 print("ResCommune", ResCommune, lien2)
             except:
                 print('pas de ResCommune', idcomm, idcc)
-            writeCom(LinkC_GC, lien2)
+            LinkC_GC.writerow(lien2)
 
             # Retour à "Choix d'une commune"
             pth = '//*[@class="chemincontainer"]/a[2]'
@@ -378,7 +373,7 @@ if __name__ == '__main__':
     LinkC_GC = csv.writer(FichierDest1)
 
     Titre = ["Id C", "Id GC", "Nom C", "Nom GC", "Nbre GC", "Indice GC " + str(Annee)]
-    writeCom(LinkC_GC, Titre)
+    LinkC_GC.writerow(Titre)
 
     # Ouverture des fichiers csv d'écriture des enregistrements scrapés et des urls incorrects
     # FichierDest1=open("Scraper-Data finance communes-"+str(Annee)+"-"+str(date.today())+".csv", "wb")
