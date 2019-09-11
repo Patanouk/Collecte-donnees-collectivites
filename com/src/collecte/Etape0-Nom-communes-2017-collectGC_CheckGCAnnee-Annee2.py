@@ -57,7 +57,7 @@ def writeCom(writer, line):
 
 
 # Fonction de collecte des données dans la page de la commune
-def Get_dataC(page_source):
+def Get_dataC(page_source: webdriver) -> str:
     # print page_source
     # content_file = open(page_source, 'r')
     # dom = BeautifulSoup(commune, "lxml")
@@ -79,7 +79,7 @@ def Get_dataC(page_source):
 # def Get_dataCC(page.page_source)
 
 
-def opengouv(url):
+def opengouv(url: str) -> webdriver:
     print("url=", url)
     chrome_options = ChromeOptions()
     chrome_options.add_argument("--incognito")
@@ -301,7 +301,7 @@ def bclcomm(page):
     idxcomm = 0
 
 
-def get_path_to_chrome_driver():
+def get_path_to_chrome_driver() -> str:
     if platform == "linux" or platform == "linux2":
         return os.path.join(root_directory, "chrome/driver/chromedriver_linux")
     elif platform == "darwin":
