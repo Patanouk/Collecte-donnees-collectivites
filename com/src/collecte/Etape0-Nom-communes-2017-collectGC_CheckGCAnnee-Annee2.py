@@ -127,7 +127,7 @@ def identify_groupement_commune(page: webdriver) -> (str, str):
         return nomccs, refcc[-1]
 
 
-def boucle_commune(page):
+def boucle_commune(page: webdriver):
     global reprise, idxcomm, bclc, bclt
     # Calcul du nombre de table(s) dans la page
     nombre_tables = len(page.find_elements_by_xpath(dbox))
