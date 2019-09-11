@@ -67,18 +67,16 @@ def get_data_commune(page_source: webdriver) -> str:
     :return:
     """
     dom = BeautifulSoup(page_source)
-    NomCom = dom.find('span', attrs={"id": "gfp"}).contents[0].strip(u'\xe0')
-    if str(NomCom).find(" (commune nouvelle") > 0:
-        NomCom = str(NomCom)[0:str(NomCom).find(" (commune nouvelle")]
-    # print(NomCom)
-    NomDep = dom.find('span', attrs={"id": "departement"}).contents[0].strip(u'\xe0').replace("-", "")
-    # print(NomDep)
-    PopCom = dom.find('td', attrs={"id": "population"}).contents[0].strip(u'\xe0').replace(
+    nom_commune = dom.find('span', attrs={"id": "gfp"}).contents[0].strip(u'\xe0')
+    if str(nom_commune).find(" (commune nouvelle") > 0:
+        nom_commune = str(nom_commune)[0:str(nom_commune).find(" (commune nouvelle")]
+
+    nom_departement = dom.find('span', attrs={"id": "departement"}).contents[0].strip(u'\xe0').replace("-", "")
+    population_commune = dom.find('td', attrs={"id": "population"}).contents[0].strip(u'\xe0').replace(
         "Population ", "").replace(" en vigueur au 1er janvier de l'exercice : ", "").replace(
         " habitants - Budget principal seul", "")
-    # print(PopCom)
-    Res = NomCom + "," + NomDep + "," + PopCom
-    return Res
+    res = nom_commune + "," + nom_departement + "," + population_commune
+    return res
 
 
 def opengouv(url: str) -> webdriver:
