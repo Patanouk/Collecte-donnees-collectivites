@@ -104,7 +104,12 @@ def getalpha(page: webdriver):
     return page.find_elements_by_xpath(dbox + '/tbody/tr[1]/td[2]/p/a')
 
 
-def indentcc(page):
+def identify_groupement_commune(page: webdriver) -> (str, str):
+    """
+
+    :param page:
+    :return: Nom et reference du groupement de commune
+    """
     # Identification du groupement de commune
     nomcc = page.find_element_by_xpath('// *[@id="gfp"]').text
     nomccs = str(nomcc).replace("/", "_")
@@ -229,7 +234,7 @@ def boucle_commune(page):
                     page.find_element_by_xpath(fiche_departement).click()
 
                     # Récupération des infos du groupement
-                    nmcc, idcc = indentcc(page)
+                    nmcc, idcc = identify_groupement_commune(page)
 
                     # Enregistrer son contenu dans un fichier nommé
                     # 'NoDépartement-Index' dans le dossier 'Groupements'
