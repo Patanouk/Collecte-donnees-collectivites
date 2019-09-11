@@ -119,7 +119,7 @@ def indentcc(page):
         return nomccs, refcc[-1]
 
 
-def bclcomm(page):
+def boucle_commune(page):
     global reprise, idxcomm, bclc, bclt
     # Calcul du nombre de table(s) dans la page
     nbtables = len(page.find_elements_by_xpath(dbox))
@@ -443,7 +443,7 @@ if __name__ == '__main__':
                 print("erreur", bcla, len(getalpha(page)))
 
             # Boucle des communes
-            bclcomm(page)
+            boucle_commune(page)
         bcla = 0
         # retour aux départements
         page.find_element_by_xpath('//*[@id="formulaire"]/div[2]/a[1]').click()
