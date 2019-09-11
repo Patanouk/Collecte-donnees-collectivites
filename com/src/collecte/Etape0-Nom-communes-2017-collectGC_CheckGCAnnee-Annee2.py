@@ -58,9 +58,6 @@ def writeCom(writer, line):
 
 # Fonction de collecte des données dans la page de la commune
 def Get_dataC(page_source: webdriver) -> str:
-    # print page_source
-    # content_file = open(page_source, 'r')
-    # dom = BeautifulSoup(commune, "lxml")
     dom = BeautifulSoup(page_source)
     NomCom = dom.find('span', attrs={"id": "gfp"}).contents[0].strip(u'\xe0')
     if str(NomCom).find(" (commune nouvelle") > 0:
@@ -111,8 +108,7 @@ def indentcc(page):
         idx = listecc.index(nomcc)
         return nomccs, refcc[idx]
     else:
-        # Ajoute la cc dans la liste 'déjà vue'
-        # et envoie la référence
+        # Ajoute la cc dans la liste 'déjà vue' et envoie la référence
         idxcc = len(listecc)
         listecc.append(nomccs)
         refcc.append('*'.join((nomccs, nodep, str(idxcc).zfill(3))))
@@ -127,11 +123,6 @@ def boucle_commune(page):
     for t in range(bclt, nbtables + 1):
         table = page.find_elements_by_xpath(dbox)[t - 1]
         nbcomm = len(table.find_elements_by_class_name('libellepetit'))
-
-        # print()
-        # print("C : t,nbcomm,table")
-        # print(t,nbcomm)
-        # print(table.find_elements_by_class_name('libellepetit'))
 
         # Boucle des communes de la table
         for c in range(bclc, nbcomm):
@@ -157,10 +148,6 @@ def boucle_commune(page):
             infos_link = page.find_element_by_xpath('//*[@id="donnees"]')
             infos = page.find_element_by_xpath('//*[@id="donnees"]').text
 
-            # print()
-            print("infos")
-            print(infos_link)
-
             # Si la page contient 'non disponibles' ou n'affiche pas les données de l'année
             if (infos.find(Annee) == -1) or (infos.find(u'non disponibles') > -1):
                 # Renseigner la variable de disponibilité
@@ -171,40 +158,25 @@ def boucle_commune(page):
                 elems = page.find_elements_by_xpath("//a[@href]")
                 for elem in elems:
                     print("elem:", elem.get_attribute("href"))
-                    if (elem.text.find(Annee) >= 0):
+                    if elem.text.find(Annee) >= 0:
                         elem.click()
-                        # print("elem.text",elem.text)
-                #                submitfromonglet_parameter('_eventId_changerexercice', 'exerciceSelectionne', str(Annee))
-                print(page.text)
                 elem.find_element_by_xpath(fiche_departement).click()
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
                 with io.open('Communes/' + idcomm + '.html', 'w') as f:
                     f.write(page.page_source)
 
-                # print()
-                # print("OK1")
-
                 #################################################
                 # Ici votre code de traitement par commune avec #
                 # les données de page.page_source               #
-
-                #
                 ResCommune = Get_dataC(page.page_source)
                 #################################################
                 dispocomm = 'OK'
-
-                # print()
-                # print("OK2")
 
             # Retour à "Choix d'une commune"
             page.find_element_by_xpath('//*[@class="chemincontainer"]/a[3]').click()
 
             print()
-            # ElementGC=page.find_element_by_id('donneesbox')
-            # print("TexteGC",type(ElementGC),ElementGC)
-            # print(ElemntGC.text)
-            # liste_gc=TexteGC.find_elements_by_id('donneesbox')
 
             pth_tot = dbox + '/tbody/tr/td/div'
             liste_gc = page.find_elements_by_xpath(pth_tot)
@@ -242,9 +214,6 @@ def boucle_commune(page):
                 # print("page.find GC",page.find_element_by_xpath(pth).text)
                 # Lecture de la page
                 infos = page.find_element_by_xpath('//*[@id="donnees"]').text
-
-                # print()
-                # print("infos GC OK")
 
                 # Si la page contient 'non disponibles' ou n'affiche
                 #   pas les données de l'année
@@ -347,11 +316,8 @@ if __name__ == '__main__':
     # Gestion du fichier log
     # S'il existe
     if os.path.isfile('log.csv'):
-        # print('Le fichier log.csv existe')
         # L'ouvrir en lecture
         log = io.open('log.csv', 'r')
-        # print(log)
-        # print("fichier de logs ouvert")
         nbline = 0
         oldd = 1
         # Lire jusqu'a la derniére ligne afin de trouver où reprendre la boucle
