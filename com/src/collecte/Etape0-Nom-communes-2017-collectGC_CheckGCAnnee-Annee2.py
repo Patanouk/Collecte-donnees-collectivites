@@ -143,9 +143,6 @@ def boucle_commune(page):
             pth = dbox + '[' + str(t) + ']/tbody/tr/td/a'
             lkcomm = page.find_elements_by_xpath(pth)[c * 2 + 1]
 
-            # print()
-            # print("C : c,lkcomm.text")
-            # print(c)
             print("page de la commune :", lkcomm.text)
 
             # Identification de la commune
