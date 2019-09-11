@@ -125,52 +125,54 @@ def indentcc(page):
 def boucle_commune(page):
     global reprise, idxcomm, bclc, bclt
     # Calcul du nombre de table(s) dans la page
-    nbtables = len(page.find_elements_by_xpath(dbox))
+    nombre_tables = len(page.find_elements_by_xpath(dbox))
     # Boucle des tables
-    for t in range(bclt, nbtables + 1):
-        table = page.find_elements_by_xpath(dbox)[t - 1]
-        nbcomm = len(table.find_elements_by_class_name('libellepetit'))
+    for index_table in range(bclt, nombre_tables + 1):
+        table = page.find_elements_by_xpath(dbox)[index_table - 1]
+        nombre_communes = len(table.find_elements_by_class_name('libellepetit'))
 
         # Boucle des communes de la table
-        for c in range(bclc, nbcomm):
+        for index_commune in range(bclc, nombre_communes):
             # Récupération du lien de la commune
-            pth = dbox + '[' + str(t) + ']/tbody/tr/td/a'
-            lkcomm = page.find_elements_by_xpath(pth)[c * 2 + 1]
+            pth = dbox + '[' + str(index_table) + ']/tbody/tr/td/a'
+            lien_commune = page.find_elements_by_xpath(pth)[index_commune * 2 + 1]
 
-            print("page de la commune :", lkcomm.text)
+            print("page de la commune :", lien_commune.text)
 
             # Identification de la commune
-            nmcomm = lkcomm.text
-            nmcomms = str(nmcomm).replace("/", "_")
-            idcomm = '*'.join((nmcomms, nodep, alpha, str(idxcomm).zfill(3)))
+            nom_commune = lien_commune.text
+            nom_communes = str(nom_commune).replace("/", "_")
+            id_commune = '*'.join((nom_communes, nodep, alpha, str(idxcomm).zfill(3)))
+
             # Page de la commune
-            lkcomm.click()
+            lien_commune.click()
+
             # Budget principal
             page.find_element_by_xpath('//*[@id="bpcommune"]/a[2]').click()
+
             # recherche des liens par année
             # Vérification de la disponibilité des données
-            infos_link = page.find_element_by_xpath('//*[@id="donnees"]')
             infos = page.find_element_by_xpath('//*[@id="donnees"]').text
 
             # Si la page contient 'non disponibles' ou n'affiche pas les données de l'année
             if (infos.find(Annee) == -1) or (infos.find(u'non disponibles') > -1):
                 # Renseigner la variable de disponibilité
-                dispocomm = 'N/D'
+                dispo_commune = 'N/D'
             else:
                 # Sinon, se positionner à l'année souhaitée et ouvrir la page 'Fiche détaillée'
                 print("exploration par annee")
                 click_sur_fiche_departement_annee(page)
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
-                with io.open('Communes/' + idcomm + '.html', 'w') as f:
+                with io.open('Communes/' + id_commune + '.html', 'w') as f:
                     f.write(page.page_source)
 
                 #################################################
                 # Ici votre code de traitement par commune avec #
                 # les données de page.page_source               #
-                ResCommune = get_data_commune(page.page_source)
+                resultat_commune = get_data_commune(page.page_source)
                 #################################################
-                dispocomm = 'OK'
+                dispo_commune = 'OK'
 
             # Retour à "Choix d'une commune"
             page.find_element_by_xpath('//*[@class="chemincontainer"]/a[3]').click()
@@ -237,11 +239,11 @@ def boucle_commune(page):
                     #################################################
                     dispocc = 'OK'
 
-            lien2 = [idcomm, idcc, nmcomm, nmcc, long - 1, tu0]
+            lien2 = [id_commune, idcc, nom_commune, nmcc, long - 1, tu0]
             try:
-                print("ResCommune", ResCommune, lien2)
+                print("ResCommune", resultat_commune, lien2)
             except:
-                print('pas de ResCommune', idcomm, idcc)
+                print('pas de ResCommune', id_commune, idcc)
             LinkC_GC.writerow(lien2)
 
             # Retour à "Choix d'une commune"
@@ -250,9 +252,9 @@ def boucle_commune(page):
                 page.find_element_by_xpath(pth).click()
 
             # Création des informations de boucle (utiles en cas de reprise)
-            cursor = '-'.join((str(d), str(a), str(t), str(c), str(idxcomm)))
+            cursor = '-'.join((str(d), str(a), str(index_table), str(index_commune), str(idxcomm)))
             # Création de la ligne à écrire dans le fichier log.csv
-            logcomm = ';'.join((idcomm, nmcomm, dispocomm,
+            logcomm = ';'.join((id_commune, nom_commune, dispo_commune,
                                 idcc, nmcc, dispocc, str(long - 1), str(tu0), cursor))
 
             # Ne pas écrire la ligne en cas de reprise (elle existe déjà)
