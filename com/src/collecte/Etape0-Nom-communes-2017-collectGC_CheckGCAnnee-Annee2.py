@@ -6,6 +6,7 @@ from sys import platform
 
 import selenium.webdriver.support.ui as UI
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.support.ui import WebDriverWait
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
@@ -172,7 +173,9 @@ def boucle_commune(page):
                     print("elem:", elem.get_attribute("href"))
                     if elem.text.find(Annee) >= 0:
                         elem.click()
-                elem.find_element_by_xpath(fiche_departement).click()
+                        break
+
+                page.find_element_by_xpath(fiche_departement).click()
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
                 with io.open('Communes/' + idcomm + '.html', 'w') as f:
