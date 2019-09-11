@@ -126,6 +126,7 @@ def boucle_commune(page):
     global reprise, idxcomm, bclc, bclt
     # Calcul du nombre de table(s) dans la page
     nombre_tables = len(page.find_elements_by_xpath(dbox))
+
     # Boucle des tables
     for index_table in range(bclt, nombre_tables + 1):
         table = page.find_elements_by_xpath(dbox)[index_table - 1]
@@ -162,6 +163,7 @@ def boucle_commune(page):
                 # Sinon, se positionner à l'année souhaitée et ouvrir la page 'Fiche détaillée'
                 print("exploration par annee")
                 click_sur_fiche_departement_annee(page)
+
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
                 with io.open('Communes/' + id_commune + '.html', 'w') as f:
