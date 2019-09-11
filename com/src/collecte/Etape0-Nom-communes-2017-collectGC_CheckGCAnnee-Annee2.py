@@ -227,12 +227,15 @@ def boucle_commune(page):
                 else:
                     # Sinon, ouvrir la page 'Fiche détaillée'
                     page.find_element_by_xpath(fiche_departement).click()
+
                     # Récupération des infos du groupement
                     nmcc, idcc = indentcc(page)
+
                     # Enregistrer son contenu dans un fichier nommé
                     # 'NoDépartement-Index' dans le dossier 'Groupements'
                     with io.open('Groupements/' + idcc + '.html', 'w') as f:
                         f.write(page.page_source)
+
                     #################################################
                     # Ici votre code de traitement par CC avec      #
                     # les données de page.page_source
