@@ -5,10 +5,9 @@ import os
 from sys import platform
 
 import selenium.webdriver.support.ui as UI
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.support.ui import WebDriverWait
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 
 # Commentaires
