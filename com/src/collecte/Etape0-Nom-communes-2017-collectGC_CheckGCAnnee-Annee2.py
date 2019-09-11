@@ -168,14 +168,7 @@ def boucle_commune(page):
             else:
                 # Sinon, se positionner à l'année souhaitée et ouvrir la page 'Fiche détaillée'
                 print("exploration par annee")
-                elems = page.find_elements_by_xpath("//a[@href]")
-                for elem in elems:
-                    print("elem:", elem.get_attribute("href"))
-                    if elem.text.find(Annee) >= 0:
-                        elem.click()
-                        break
-
-                page.find_element_by_xpath(fiche_departement).click()
+                click_sur_fiche_departement_annee(page)
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
                 with io.open('Communes/' + idcomm + '.html', 'w') as f:
@@ -283,6 +276,16 @@ def boucle_commune(page):
         bclc = 0
     bclt = 2
     idxcomm = 0
+
+
+def click_sur_fiche_departement_annee(page: webdriver):
+    elems = page.find_elements_by_xpath("//a[@href]")
+    for elem in elems:
+        print("elem:", elem.get_attribute("href"))
+        if Annee in elem.text:
+            elem.click()
+            break
+    page.find_element_by_xpath(fiche_departement).click()
 
 
 def get_path_to_chrome_driver() -> str:
