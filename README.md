@@ -1,1 +1,1 @@
-# Collecte-donnees-collectivit-s
+# Collecte-donnees-collectivités
