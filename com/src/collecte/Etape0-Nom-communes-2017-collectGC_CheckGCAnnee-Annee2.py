@@ -59,7 +59,7 @@ def cherche(a, b):
     return s
 
 
-def Get_dataC(page_source: webdriver) -> str:
+def get_data_commune(page_source: webdriver) -> str:
     """
     Fonction de collecte des données dans la page de la commune
     :param page_source:
@@ -181,7 +181,7 @@ def boucle_commune(page):
                 #################################################
                 # Ici votre code de traitement par commune avec #
                 # les données de page.page_source               #
-                ResCommune = Get_dataC(page.page_source)
+                ResCommune = get_data_commune(page.page_source)
                 #################################################
                 dispocomm = 'OK'
 
