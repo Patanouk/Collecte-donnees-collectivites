@@ -67,18 +67,25 @@ def get_data_commune(page_source: webdriver) -> str:
     """
     dom = BeautifulSoup(page_source)
     nom_commune = dom.find('span', attrs={"id": "gfp"}).contents[0].strip(u'\xe0')
-    if str(nom_commune).find(" (commune nouvelle") > 0:
+
+    if " (commune nouvelle" in nom_commune:
         nom_commune = str(nom_commune)[0:str(nom_commune).find(" (commune nouvelle")]
 
-    nom_departement = dom.find('span', attrs={"id": "departement"}).contents[0].strip(u'\xe0').replace("-", "")
-    population_commune = dom.find('td', attrs={"id": "population"}).contents[0].strip(u'\xe0').replace(
-        "Population ", "").replace(" en vigueur au 1er janvier de l'exercice : ", "").replace(
-        " habitants - Budget principal seul", "")
+    nom_departement = dom.find('span', attrs={"id": "departement"}).contents[0] \
+        .strip(u'\xe0') \
+        .replace("-", "")
+
+    population_commune = dom.find('td', attrs={"id": "population"}).contents[0] \
+        .strip(u'\xe0') \
+        .replace("Population ", "") \
+        .replace(" en vigueur au 1er janvier de l'exercice : ", "") \
+        .replace(" habitants - Budget principal seul", "")
+
     res = nom_commune + "," + nom_departement + "," + population_commune
     return res
 
 
-def opengouv(url: str) -> webdriver:
+def open_main_page(url: str) -> webdriver:
     print("url=", url)
     chrome_options = ChromeOptions()
     chrome_options.add_argument("--incognito")
@@ -391,7 +398,7 @@ if __name__ == '__main__':
     # writeCom(FileVigie, Titre)
 
     # Lancer Chrome et ouvrir le site
-    page = opengouv(url)
+    page = open_main_page(url)
 
     # Boucle départements
     for d in range(bcld, len(getdep(page).options)):
