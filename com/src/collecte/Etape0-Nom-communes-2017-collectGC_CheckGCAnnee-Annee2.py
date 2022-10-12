@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+import pkg_resources
+pkg_resources.require("selenium==3.141.0")
+import selenium.webdriver.support.ui as UI
 import csv
 import io
 import os
 from sys import platform
-
-import selenium.webdriver.support.ui as UI
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
