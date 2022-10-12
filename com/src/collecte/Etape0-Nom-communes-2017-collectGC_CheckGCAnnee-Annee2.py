@@ -18,7 +18,7 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 # Fichiers résultats ligne 311
 
 # lignes 235-236 écriture du fichier commune
-# lignes 273-274 écriture dy fichier grouepement
+# lignes 273-274 écriture du fichier grouepement
 # ligne 169 emplacement de Chromedriver
 # Ligne 54 emplacement de stockage des fichiers résultats
 #  -------- Fonctions auxiliaires et d'analyse des données des pages extraites -------
