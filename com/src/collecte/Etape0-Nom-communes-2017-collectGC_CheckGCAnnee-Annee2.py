@@ -304,7 +304,7 @@ def get_path_to_chrome_driver() -> str:
 if __name__ == '__main__':
 
     # Année de recherche des données
-    Annee = '2014'
+    Annee = '2022'
 
     # Référencement du répertoire de travail
     root_directory = os.path.join(os.path.dirname(__file__), '../../../')
