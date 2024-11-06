@@ -80,6 +80,7 @@ def open_main_page(url: str) -> webdriver:
     print("url=", url)
     chrome_options = ChromeOptions()
     chrome_options.add_argument("--incognito")
+    # chrome_options.add_argument("--headless")
 
     browser = webdriver.Chrome(executable_path=path_to_chromedriver, chrome_options=chrome_options)
     browser.implicitly_wait(20)  # seconds
