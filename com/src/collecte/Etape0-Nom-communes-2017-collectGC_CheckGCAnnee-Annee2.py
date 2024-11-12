@@ -174,6 +174,7 @@ def boucle_commune(page: webdriver):
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
                 with io.open('Communes/' + id_commune + '.html', 'w') as f:
+                    print("Saving html to {}", f.name)
                     f.write(page.page_source)
 
                 #################################################
