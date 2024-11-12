@@ -8,6 +8,7 @@ from sys import platform
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+
 pkg_resources.require("selenium==3.141.0")
 
 
@@ -303,26 +304,23 @@ def get_path_to_chrome_driver() -> str:
         raise EnvironmentError("Only supporting Linux & Mac")
 
 
+def initFolders() -> None:
+    output_directory = os.path.join(root_directory, 'output/' + str(Annee) + '/ScraperResults-Round0')
+    os.makedirs(output_directory, exist_ok=True)
+    for dossier in ('Communes', 'Groupements'):
+        os.makedirs(dossier, exist_ok=True)
+
+    print("Setting work directory to : {work_directory}".format(work_directory=os.getcwd()))
+    os.chdir(output_directory)
+
+
 if __name__ == '__main__':
     try:
         # Année de recherche des données
         Annee = '2023'
-
-        # Référencement du répertoire de travail
         root_directory = os.path.join(os.path.dirname(__file__), '../../../')
-        output_directory = os.path.join(root_directory, 'output/' + str(Annee) + '/ScraperResults-Round0')
         path_to_chromedriver = get_path_to_chrome_driver()
-
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)
-
-        os.chdir(output_directory)
-        print("Actual work directory : {work_directory}".format(work_directory=os.getcwd()))
-
-        # Création des dossier 'Communes' et 'Groupements' s'ils n'existent pas
-        for dossier in ('Communes', 'Groupements'):
-            if not os.path.isdir(dossier):
-                os.makedirs(dossier)
+        initFolders()
 
         # -------- Initialisation des variables -------
         # Lien vers le site
