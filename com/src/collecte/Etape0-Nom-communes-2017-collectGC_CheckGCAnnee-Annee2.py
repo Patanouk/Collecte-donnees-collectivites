@@ -394,12 +394,6 @@ if __name__ == '__main__':
         FichierDest2 = open("ScraperCom-communes incorrectes" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
         Fileurldef = csv.writer(FichierDest2)
 
-        # Ecriture de la ligne de titre du fichier résultats
-        # Titre=['indice','url','CodeGeo','Nom Commune INSEE','Nom Com portail','Num Com','NumDep','NomDep','NumReg','NumReg16','PopCom','TailleCom','Num EPCI','Nature EPCI','Groupe Communes']
-        # Titre=Titre+['RevFoncref_C','ImpLocref_C','AutImpref_C','DGFref_C','DepFoncref_C','DepPersoref_C','Achatref_C','ChFinref_C','Contref_C','DepSubref_C','RevInvref_C','Empruntref_C','Subrref_C','FCTVAref_C','Contref_C','Empruntref_C','DepInvref_C','DepEquipref_C','RembEmpruntref_C','ChRepref_C','Immoref_C','EncoursDetteref_C','AnDetteref_C','BaseTHref_C','BaseTFPBref_C','BaseTFPNBref_C','BaseTAPNBref_C','BaseTCEntref_C','MontTHref_C','MontTFPBref_C','MontTFPNBref_C','MontTAPNBref_C','MontTCEntref_C','MontCVAEref_C','MontEntResref_C','MontSurComref_C']
-        # Titre=Titre+['RevFoncref_GC','ImpLocref_GC','AutImpref_GC','DGFref_GC','DepFoncref_GC','DepPersoref_GC','Achatref_GC','ChFinref_GC','Contref_GC','DepSubref_GC','RevInvref_GC','Empruntref_GC','Subrref_GC','FCTVAref_GC','Contref_GC','Empruntref_GC','DepInvref_GC','DepEquipref_GC','RembEmpruntref_GC','ChRepref_GC','Immoref_GC','EncoursDetteref_GC','AnDetteref_GC','BaseTHref_GC','BaseTFPBref_GC','BaseTFPNBref_GC','BaseTAPNBref_GC','BaseTCEntref_GC','MontTHref_GC','MontTFPBref_GC','MontTFPNBref_GC','MontTAPNBref_GC','MontTCEntref_GC','MontCVAEref_GC','MontEntResref_GC','MontSurComref_GC']
-        # writeCom(FileVigie, Titre)
-
         # Lancer Chrome et ouvrir le site
         page = open_main_page(url)
 
