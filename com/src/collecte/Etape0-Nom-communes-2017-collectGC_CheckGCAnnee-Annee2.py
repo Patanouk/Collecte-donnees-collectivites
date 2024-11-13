@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import sys
+import traceback
+
 import pkg_resources
 import selenium.webdriver.support.ui as UI
 import csv
@@ -179,7 +182,7 @@ def boucle_commune(page: webdriver):
 
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
-                with io.open('Communes/' + id_commune + '.html', 'w') as f:
+                with io.open(output_directory + 'Communes/' + id_commune + '.html', 'w') as f:
                     print("Saving html to {}", f.name)
                     f.write(page.page_source)
 
@@ -271,7 +274,7 @@ def boucle_commune(page: webdriver):
                 page.find_element_by_xpath(pth).click()
 
             # Création des informations de boucle (utiles en cas de reprise)
-            cursor = '-'.join((str(d), str(a), str(index_table), str(index_commune), str(idxcomm)))
+            cursor = '-'.join((str(departmentNumber), str(a), str(index_table), str(index_commune), str(idxcomm)))
             # Création de la ligne à écrire dans le fichier log.csv
             logcomm = ';'.join((id_commune, nom_commune, dispo_commune,
                                 idcc, nmcc, dispocc, str(long - 1), str(tu0), cursor))
@@ -310,20 +313,22 @@ def get_path_to_chrome_driver() -> str:
 
 
 def initFolders() -> None:
-    output_directory = os.path.join(root_directory, 'output/' + str(Annee) + '/ScraperResults-Round0')
     os.makedirs(output_directory, exist_ok=True)
-    for dossier in ('Communes', 'Groupements'):
-        os.makedirs(dossier, exist_ok=True)
-
     print("Setting work directory to : {work_directory}".format(work_directory=os.getcwd()))
     os.chdir(output_directory)
 
+    for dossier in ('Communes', 'Groupements'):
+        os.makedirs(dossier, exist_ok=True)
+
 
 if __name__ == '__main__':
+    departmentNumber = sys.argv[1:][0]
+
     try:
         # Année de recherche des données
         Annee = '2023'
         root_directory = os.path.join(os.path.dirname(__file__), '../../../')
+        output_directory = os.path.join(root_directory, 'output/' + str(Annee) + '/' + str(departmentNumber) + '/ScraperResults-Round0/')
         path_to_chromedriver = get_path_to_chrome_driver()
         initFolders()
 
@@ -403,40 +408,40 @@ if __name__ == '__main__':
         page = open_main_page(url)
 
         # Boucle départements
-        for d in range(bcld, len(getdep(page).options)):
-            # Selection et page du département
+        # Selection et page du département
+        try:
+            getdep(page).select_by_index(departmentNumber)
+        except:
+            print(page, departmentNumber)
+        print("d=", departmentNumber)
+        print("page")
+        print(page)
+        # Click sur OK
+        page.find_element_by_name('_eventId_validercommunesetgroupts').click()
+        # Log du département
+        nodep = page.find_element_by_xpath(dbox + '[1]/tbody/tr[1]/td[1]/p').text
+        nodep = nodep.split(' ')[0]
+        # Remise à zéro de la liste des cc
+        listecc = []
+        refcc = []
+        # Boucle alphabétique
+        for a in range(bcla, len(getalpha(page))):
             try:
-                getdep(page).select_by_index(d)
+                lkalpha = getalpha(page)[a]
+                alpha = lkalpha.text
+                lkalpha.click()
             except:
-                print(page, d)
-            print("d=", d)
-            print("page")
-            print(page)
-            # Click sur OK
-            page.find_element_by_name('_eventId_validercommunesetgroupts').click()
-            # Log du département
-            nodep = page.find_element_by_xpath(dbox + '[1]/tbody/tr[1]/td[1]/p').text
-            nodep = nodep.split(' ')[0]
-            # Remise à zéro de la liste des cc
-            listecc = []
-            refcc = []
-            # Boucle alphabétique
-            for a in range(bcla, len(getalpha(page))):
-                try:
-                    lkalpha = getalpha(page)[a]
-                    alpha = lkalpha.text
-                    lkalpha.click()
-                except:
-                    print("erreur", bcla, len(getalpha(page)))
+                print("erreur", bcla, len(getalpha(page)))
 
-                # Boucle des communes
-                boucle_commune(page)
-            bcla = 0
-            # retour aux départements
-            page.find_element_by_xpath('//*[@id="formulaire"]/div[2]/a[1]').click()
+            # Boucle des communes
+            boucle_commune(page)
+        bcla = 0
+        # retour aux départements
+        page.find_element_by_xpath('//*[@id="formulaire"]/div[2]/a[1]').click()
 
+        print("Finished crawling for department " + departmentNumber)
         log.close()
-    except:
-        print("Restarting the script")
-        os.system("python3 /home/jean/Work/projects/Collecte-donnees-collectivites/com/src/collecte/Etape0-Nom"
-                  "-communes-2017-collectGC_CheckGCAnnee-Annee2.py")
+    except Exception as error:
+        print("Restarting the script because of " + traceback.format_exc())
+        os.system("python3 /home/jean/Work/projects/Collecte-donnees-collectivites-copy/com/src/collecte/Etape0-Nom"
+                  "-communes-2017-collectGC_CheckGCAnnee-Annee2.py " + departmentNumber)
