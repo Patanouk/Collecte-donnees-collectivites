@@ -8,6 +8,9 @@ from sys import platform
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 pkg_resources.require("selenium==3.141.0")
 
@@ -171,6 +174,8 @@ def boucle_commune(page: webdriver):
                 # Sinon, se positionner à l'année souhaitée et ouvrir la page 'Fiche détaillée'
                 print("exploration par annee")
                 click_sur_fiche_departement_annee(page)
+                #Attendre que la page 'Fiche detaille' s'affiche
+                WebDriverWait(page, 20).until(EC.presence_of_element_located((By.ID, "tableaufichedetaillee")))
 
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
