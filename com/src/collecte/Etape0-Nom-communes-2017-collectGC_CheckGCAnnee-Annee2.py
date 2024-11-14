@@ -322,7 +322,7 @@ def initFolders() -> None:
 
 
 if __name__ == '__main__':
-    departmentNumber = sys.argv[1:][0]
+    departmentNumbers = sys.argv[1:][0]
 
     try:
         # Année de recherche des données
@@ -409,32 +409,33 @@ if __name__ == '__main__':
 
         # Boucle départements
         # Selection et page du département
-        try:
-            getdep(page).select_by_index(departmentNumber)
-        except:
-            print(page, departmentNumber)
-        print("d=", departmentNumber)
-        print("page")
-        print(page)
-        # Click sur OK
-        page.find_element_by_name('_eventId_validercommunesetgroupts').click()
-        # Log du département
-        nodep = page.find_element_by_xpath(dbox + '[1]/tbody/tr[1]/td[1]/p').text
-        nodep = nodep.split(' ')[0]
-        # Remise à zéro de la liste des cc
-        listecc = []
-        refcc = []
-        # Boucle alphabétique
-        for a in range(bcla, len(getalpha(page))):
+        for departmentNumber in departmentNumbers:
             try:
-                lkalpha = getalpha(page)[a]
-                alpha = lkalpha.text
-                lkalpha.click()
+                getdep(page).select_by_index(departmentNumber)
             except:
-                print("erreur", bcla, len(getalpha(page)))
+                print(page, departmentNumber)
+            print("d=", departmentNumber)
+            print("page")
+            print(page)
+            # Click sur OK
+            page.find_element_by_name('_eventId_validercommunesetgroupts').click()
+            # Log du département
+            nodep = page.find_element_by_xpath(dbox + '[1]/tbody/tr[1]/td[1]/p').text
+            nodep = nodep.split(' ')[0]
+            # Remise à zéro de la liste des cc
+            listecc = []
+            refcc = []
+            # Boucle alphabétique
+            for a in range(bcla, len(getalpha(page))):
+                try:
+                    lkalpha = getalpha(page)[a]
+                    alpha = lkalpha.text
+                    lkalpha.click()
+                except:
+                    print("erreur", bcla, len(getalpha(page)))
 
-            # Boucle des communes
-            boucle_commune(page)
+                # Boucle des communes
+                boucle_commune(page)
         bcla = 0
         # retour aux départements
         page.find_element_by_xpath('//*[@id="formulaire"]/div[2]/a[1]').click()
