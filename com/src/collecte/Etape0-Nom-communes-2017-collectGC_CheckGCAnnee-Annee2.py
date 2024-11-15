@@ -445,6 +445,8 @@ if __name__ == '__main__':
         print("Finished crawling for department " + " ".join(departmentNumbers))
         log.close()
     except Exception as error:
+        if 'page' in locals():
+            page.close()
         print("Restarting the script because of " + traceback.format_exc())
         os.system("python3 /home/jean/Work/projects/Collecte-donnees-collectivites-copy/com/src/collecte/Etape0-Nom"
                   "-communes-2017-collectGC_CheckGCAnnee-Annee2.py " + " ".join(departmentNumbers))
