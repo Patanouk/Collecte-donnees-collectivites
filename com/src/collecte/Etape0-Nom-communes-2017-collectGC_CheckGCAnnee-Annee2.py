@@ -285,6 +285,7 @@ def boucle_commune(page: webdriver):
             else:
                 print("ligne de log", logcomm)
                 log.write(logcomm + '\n')
+                log.flush()
             # Incrémentation de l'index des communes
             idxcomm += 1
         # Remise à défaut des variables de boucle
@@ -322,94 +323,95 @@ def initFolders() -> None:
 
 
 if __name__ == '__main__':
-    departmentNumbers = sys.argv[1:][0]
+    departmentNumbers = sys.argv[1:]
 
     try:
-        # Année de recherche des données
-        Annee = '2023'
-        root_directory = os.path.join(os.path.dirname(__file__), '../../../')
-        output_directory = os.path.join(root_directory, 'output/' + str(Annee) + '/' + str(departmentNumber) + '/ScraperResults-Round0/')
-        path_to_chromedriver = get_path_to_chrome_driver()
-        initFolders()
-
-        # -------- Initialisation des variables -------
-        # Lien vers le site
-        url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/accueil/flux.ex?_flowId=accueilcclloc-flow'
-        # Paths les plus utilisés dans la recherche de liens
-        dbox = '//*[@id="donneesbox"]/table'
-        fiche_departement = '//*[@id="pavegestionguichets"]/table[2]/tbody/tr/td[5]/a'
-        # Variables de boucles utiles au premier lancement...
-        # ... sinon elle sont alimentées par le fichier de log
-        bcld, bcla, bclt, bclc, idxcomm = (1, 0, 2, 0, 0)
-        alpha = ''
-        listecc, refcc = ([], [])
-        reprise = False
-
-        # Gestion du fichier log
-        # S'il existe
-        if os.path.isfile('log.csv'):
-            # L'ouvrir en lecture
-            log = io.open('log.csv', 'r')
-            nbline = 0
-            oldd = 1
-            # Lire jusqu'a la derniére ligne afin de trouver où reprendre la boucle
-            for line in log:
-                print(line)
-                cols = line.split(';')
-                print(cols)
-                # Ne pas lire la première ligne (en-tête)
-                if nbline != 0:
-                    # Récupérer les variables de boucles à partir de la colonne 'Boucle'
-                    bcld, bcla, bclt, bclc, idxcomm = [int(i) for i in cols[8].replace('\n', "").split('-')]
-                    # Si changement de département...
-                    if bcld != oldd:
-                        # ...vider la liste des cc
-                        listecc, refcc = ([], [])
-                        oldd = bcld
-                    # Si la cc n'est pas dans la liste...
-                    if cols[4] not in listecc:
-                        # ... l'ajouter
-                        listecc.append(cols[4])
-                        refcc.append(cols[3])
-                nbline += 1
-            log.close()
-            reprise = True
-        else:
-            # S'il n'existe pas le créer et écrire l'en-tête
-            log = io.open('log.csv', 'w')
-            log.write(u'IdCommunes;Nom_C;Dispo;IDGroupement;Nom_GC;Dispo;Boucle;Nbre_GC;Indice_GC\n')
-            log.close()
-
-        # Réouvrir le fichier de log afin de l'alimenter avec les nouvelles entrées
-        log = io.open('log.csv', 'a')
-        try:
-            Nreprise = nbline
-        except:
-            Nreprise = 0
-
-        # Ouverture du fichier csv d'écriture des liens communes - groupement de communes
-        # FichierDest1=open("Lien-C-GC"+str(Annee)+"-"+str(date.today())+".csv", "w")
-        FichierDest1 = open("Lien-C-GC" + str(Annee) + "-" + str(Nreprise) + ".csv", "w")
-        LinkC_GC = csv.writer(FichierDest1)
-
-        Titre = ["Id C", "Id GC", "Nom C", "Nom GC", "Nbre GC", "Indice GC " + str(Annee)]
-        LinkC_GC.writerow(Titre)
-
-        # Ouverture des fichiers csv d'écriture des enregistrements scrapés et des urls incorrects
-        # FichierDest1=open("Scraper-Data finance communes-"+str(Annee)+"-"+str(date.today())+".csv", "wb")
-        FichierDest1 = open("Scraper-Data finance communes-" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
-        FileVigie = csv.writer(FichierDest1)
-
-        # FichierDest2=open("ScraperCom"+str(Annee)+"-communes_incorrectes"+str(date.today())+".csv", "wb")
-        FichierDest2 = open("ScraperCom-communes incorrectes" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
-        Fileurldef = csv.writer(FichierDest2)
-
-        # Lancer Chrome et ouvrir le site
-        page = open_main_page(url)
-
         # Boucle départements
         # Selection et page du département
         for departmentNumber in departmentNumbers:
+            # Année de recherche des données
+            Annee = '2023'
+            root_directory = os.path.join(os.path.dirname(__file__), '../../../')
+            path_to_chromedriver = get_path_to_chrome_driver()
+            output_directory = os.path.join(root_directory, 'output/' + str(Annee) + '/' + str(departmentNumber) + '/ScraperResults-Round0/')
+            initFolders()
+
+            # -------- Initialisation des variables -------
+            # Lien vers le site
+            url = 'https://www.impots.gouv.fr/cll/zf1/cll/zf1/accueil/flux.ex?_flowId=accueilcclloc-flow'
+            # Paths les plus utilisés dans la recherche de liens
+            dbox = '//*[@id="donneesbox"]/table'
+            fiche_departement = '//*[@id="pavegestionguichets"]/table[2]/tbody/tr/td[5]/a'
+            # Variables de boucles utiles au premier lancement...
+            # ... sinon elle sont alimentées par le fichier de log
+            bcld, bcla, bclt, bclc, idxcomm = (1, 0, 2, 0, 0)
+            alpha = ''
+            listecc, refcc = ([], [])
+            reprise = False
+
+
+            # Gestion du fichier log
+            # S'il existe
+            if os.path.isfile('log.csv'):
+                # L'ouvrir en lecture
+                log = io.open('log.csv', 'r')
+                nbline = 0
+                oldd = 1
+                # Lire jusqu'a la derniére ligne afin de trouver où reprendre la boucle
+                for line in log:
+                    print(line)
+                    cols = line.split(';')
+                    print(cols)
+                    # Ne pas lire la première ligne (en-tête)
+                    if nbline != 0:
+                        # Récupérer les variables de boucles à partir de la colonne 'Boucle'
+                        bcld, bcla, bclt, bclc, idxcomm = [int(i) for i in cols[8].replace('\n', "").split('-')]
+                        # Si changement de département...
+                        if bcld != oldd:
+                            # ...vider la liste des cc
+                            listecc, refcc = ([], [])
+                            oldd = bcld
+                        # Si la cc n'est pas dans la liste...
+                        if cols[4] not in listecc:
+                            # ... l'ajouter
+                            listecc.append(cols[4])
+                            refcc.append(cols[3])
+                    nbline += 1
+                log.close()
+                reprise = True
+            else:
+                # S'il n'existe pas le créer et écrire l'en-tête
+                log = io.open('log.csv', 'w')
+                log.write(u'IdCommunes;Nom_C;Dispo;IDGroupement;Nom_GC;Dispo;Boucle;Nbre_GC;Indice_GC\n')
+                log.close()
+
+            # Réouvrir le fichier de log afin de l'alimenter avec les nouvelles entrées
+            log = io.open('log.csv', 'a')
+            try:
+                Nreprise = nbline
+            except:
+                Nreprise = 0
+
+            # Ouverture du fichier csv d'écriture des liens communes - groupement de communes
+            # FichierDest1=open("Lien-C-GC"+str(Annee)+"-"+str(date.today())+".csv", "w")
+            FichierDest1 = open("Lien-C-GC" + str(Annee) + "-" + str(Nreprise) + ".csv", "w")
+            LinkC_GC = csv.writer(FichierDest1)
+
+            Titre = ["Id C", "Id GC", "Nom C", "Nom GC", "Nbre GC", "Indice GC " + str(Annee)]
+            LinkC_GC.writerow(Titre)
+
+            # Ouverture des fichiers csv d'écriture des enregistrements scrapés et des urls incorrects
+            # FichierDest1=open("Scraper-Data finance communes-"+str(Annee)+"-"+str(date.today())+".csv", "wb")
+            FichierDest1 = open("Scraper-Data finance communes-" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
+            FileVigie = csv.writer(FichierDest1)
+
+            # FichierDest2=open("ScraperCom"+str(Annee)+"-communes_incorrectes"+str(date.today())+".csv", "wb")
+            FichierDest2 = open("ScraperCom-communes incorrectes" + str(Annee) + "-" + str(Nreprise) + ".csv", "wb")
+            Fileurldef = csv.writer(FichierDest2)
+
+            # Lancer Chrome et ouvrir le site
+            page = open_main_page(url)
+
             try:
                 getdep(page).select_by_index(departmentNumber)
             except:
@@ -440,9 +442,9 @@ if __name__ == '__main__':
         # retour aux départements
         page.find_element_by_xpath('//*[@id="formulaire"]/div[2]/a[1]').click()
 
-        print("Finished crawling for department " + departmentNumber)
+        print("Finished crawling for department " + " ".join(departmentNumbers))
         log.close()
     except Exception as error:
         print("Restarting the script because of " + traceback.format_exc())
         os.system("python3 /home/jean/Work/projects/Collecte-donnees-collectivites-copy/com/src/collecte/Etape0-Nom"
-                  "-communes-2017-collectGC_CheckGCAnnee-Annee2.py " + departmentNumber)
+                  "-communes-2017-collectGC_CheckGCAnnee-Annee2.py " + " ".join(departmentNumbers))
