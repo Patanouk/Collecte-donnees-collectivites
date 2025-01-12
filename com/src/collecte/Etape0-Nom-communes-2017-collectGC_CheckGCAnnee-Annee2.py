@@ -325,8 +325,7 @@ def initFolders() -> None:
 
 
 if __name__ == '__main__':
-    departmentNumbers = ["80", "01", "02", "09", "16", "39", "44", "50", "51", "57", "61", "62", "64", "68", "71", "74",
-                         "82", "83", "85", "87", "88"]
+    departmentNumbers = ["82", "83", "85", "87", "88"]
     missingCommunes = {"ABBEVILLE", "ABONDANCE", "ADRETS-DE-L'ESTEREL (LES)", "ALÇAY-ALÇABEHETY-SUNHARETTE",
                        "ALGOLSHEIM", "ALTENACH", "ALTKIRCH", "AMMERSCHWIHR", "ANDOLSHEIM", "ANNOVILLE", "APPENWIHR",
                        "ARTZENHEIM", "ASPACH", "ASPACH-LE-BAS", "ASPACH-MICHELBACH", "ATTENSCHWILLER", "AUBURE",
