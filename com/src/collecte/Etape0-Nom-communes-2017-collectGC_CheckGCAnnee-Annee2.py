@@ -157,7 +157,7 @@ def boucle_commune(page: webdriver):
             nom_commune = lien_commune.text
             nom_communes = str(nom_commune).replace("/", "_")
             if nom_commune not in missingCommunes:
-                print("Skipping commune {} in department {}", nom_commune, departmentNumber)
+                print(f"Skipping commune {nom_commune} in department {departmentNumber}")
                 continue
             id_commune = '*'.join((nom_communes, nodep, alpha, str(idxcomm).zfill(3)))
 
