@@ -87,7 +87,6 @@ def open_main_page(url: str) -> webdriver:
     print("url=", url)
     chrome_options = ChromeOptions()
     chrome_options.add_argument("--incognito")
-    chrome_options.add_argument("--headless")
 
     browser = webdriver.Chrome(executable_path=path_to_chromedriver, chrome_options=chrome_options)
     browser.implicitly_wait(20)  # seconds
@@ -323,7 +322,8 @@ def initFolders() -> None:
 
 
 if __name__ == '__main__':
-    departmentNumbers = sys.argv[1:]
+    departmentNumbers = ["80", "01", "02", "09", "16", "39", "44", "50", "51", "57", "61", "62", "64", "68", "71", "74",
+                         "82", "83", "85", "87", "88"]
 
     try:
         # Boucle départements
@@ -413,7 +413,8 @@ if __name__ == '__main__':
             page = open_main_page(url)
 
             try:
-                getdep(page).select_by_index(departmentNumber)
+                departmentIndex = next(i for i, option in enumerate(getdep(page).options) if departmentNumber in option.text)
+                getdep(page).select_by_index(departmentIndex)
             except:
                 print(page, departmentNumber)
             print("d=", departmentNumber)
